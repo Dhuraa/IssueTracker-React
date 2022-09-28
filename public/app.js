@@ -1,6 +1,6 @@
+//const { response } = require("express")
 const IssueRow = props => {
-  // const rowStyle = { "border": "1px solid" }
-  return /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, props.Id), /*#__PURE__*/React.createElement("td", null, props.Status), /*#__PURE__*/React.createElement("td", null, props.Owner), /*#__PURE__*/React.createElement("td", null, props.Effort), /*#__PURE__*/React.createElement("td", null, props.Create.toDateString()), /*#__PURE__*/React.createElement("td", null, props.Due.toDateString()), /*#__PURE__*/React.createElement("td", null, props.Title));
+  return /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, props.Id), /*#__PURE__*/React.createElement("td", null, props.Status), /*#__PURE__*/React.createElement("td", null, props.Owner), /*#__PURE__*/React.createElement("td", null, props.Effort), /*#__PURE__*/React.createElement("td", null, props.Create.toString()), /*#__PURE__*/React.createElement("td", null, props.Due.toString()), /*#__PURE__*/React.createElement("td", null, props.Title));
 };
 
 const IssueTable = ({
@@ -8,37 +8,7 @@ const IssueTable = ({
 }) => {
   const rowStyle = {
     "border": "1px solid"
-  }; //setting state of variable - hook - rerender the page
-  //Intializing all issues with empty data
-  //const [allIssues, setAllIssues] = React.useState([]);
-  //Assume you are fetching data from API
-  // let tempIssues = [
-  //     {Id:1, Status:"Assigned", Owner:"Person-A", Effort:14, Create: new Date("2022-09-20"), Due: new Date("2022-09-23"), Title:"This is the First Issue"},
-  //     {Id:2, Status:"Resolves", Owner:"Person-B", Effort:10, Create: new Date("2022-09-19"), Due: new Date("2022-09-24"), Title:"This is the Second Issue"},
-  // ];
-  //lec2
-  // let newIssues = [
-  //     {Status:"Assigned", Owner:"Person-C", Effort:14, Create: new Date("2022-09-20"), Due: new Date("2022-09-23"), Title:"This is the Third Issue"},
-  // ];
-  // let newIssues = {Status:"Assigned", Owner:"Person-C", Effort:14, Create: new Date("2022-09-20"), Due: new Date("2022-09-23"), Title:"This is the Third Issue"};
-  // const [allIssues, setAllIssues] = React.useState(tempIssues);
-  //Hook used after every rendering
-  //use effect (function,dependency) -> called after every rendering
-  // React.useEffect(() => {
-  //     setTimeout(() => {
-  //         //lec2
-  //        // AddSingleIssue();
-  //         AddSingleIssue(newIssues);
-  //    }, 2000)
-  // }, []);
-  //lec2
-  // const AddSingleIssue = () => {
-  //     setAllIssues([...tempIssues, ...newIssues])
-  // }
-  // setTimeout(() => {
-  //      setAllIssues(tempIssues);
-  // }, 2000)
-
+  };
   const AllIssueRow = allIssues.map(issue => /*#__PURE__*/React.createElement(IssueRow, {
     key: issue.Id,
     Id: issue.Id,
@@ -59,12 +29,6 @@ const IssueFilter = () => {
 const AddIssue = ({
   AddSingleIssue
 }) => {
-  // let newIssues = {Status:"Assigned", Owner:"Person-C", Effort:14, Create: new Date("2022-09-20"), Due: new Date("2022-09-23"), Title:"This is the Third Issue"};
-  //     React.useEffect(() => {
-  //     setTimeout(() => {
-  //         AddSingleIssue(newIssues);
-  //    }, 2000)
-  // }, []);
   const handleSubmit = e => {
     e.preventDefault();
     const form = document.forms.addIssue;
@@ -114,24 +78,40 @@ const AddIssue = ({
 };
 
 const IssueList = () => {
-  let temIssues = [{
-    Id: 1,
-    Status: "Assigned",
-    Owner: "Person-A",
-    Effort: 14,
-    Create: new Date("2022-09-20"),
-    Due: new Date("2022-09-23"),
-    Title: "This is the First Issue"
-  }, {
-    Id: 2,
-    Status: "Resolves",
-    Owner: "Person-B",
-    Effort: 10,
-    Create: new Date("2022-09-19"),
-    Due: new Date("2022-09-24"),
-    Title: "This is the Second Issue"
-  }];
-  const [allIssues, setAllIssues] = React.useState(temIssues);
+  // let temIssues = [
+  //  {Id:1, Status:"Assigned", Owner:"Person-A", Effort:14, Create: new Date("2022-09-20"), Due: new Date("2022-09-23"), Title:"This is the First Issue"},
+  //  {Id:2, Status:"Resolves", Owner:"Person-B", Effort:10, Create: new Date("2022-09-19"), Due: new Date("2022-09-24"), Title:"This is the Second Issue"},
+  // ];
+  const [allIssues, setAllIssues] = React.useState([]);
+  let query = `
+    query {
+        issueList {
+            Id
+            Status
+            Owner
+            Effort
+            Create 
+            Due
+            Title
+        }
+    }`; //invokes callback function
+
+  React.useEffect(function () {
+    fetch('/graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        query
+      })
+    }).then(async response => {
+      let tempIssues = await response.json();
+      let tempList = tempIssues.data.issueList;
+      console.log(tempList);
+      setAllIssues(tempList);
+    });
+  }, []);
 
   const AddSingleIssue = newIssues => {
     newIssues.Id = allIssues.length + 1;
