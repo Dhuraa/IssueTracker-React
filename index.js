@@ -1,10 +1,19 @@
 const express = require("express");
+require('./models/db')
+const Issue = require('./models/issues')
 
 /***GRAPHQL */
 const { ApolloServer } = require("apollo-server-express");
 
 // ! = mandatory
 const typeDefs = `
+    type inputIssue={
+      Id:  Int
+      Status: String!
+      Owner: String!
+      Effort: Int
+      Title: String!
+    }
     type issue{
         Id:  String!
         Status: String!
@@ -20,13 +29,15 @@ const typeDefs = `
     }
     type Mutation {
         setAboutMessage(message: String!): String
+        AddSingleIssue(singleIssue: inputIssue): issue
     }`;
 
     let aboutMessage = "Hello From GRAPHQL";
-    let tempIssues = [
-        {Id:1, Status:"Assigned", Owner:"Person-A", Effort:14, Create: new Date("2022-09-20"), Due: new Date("2022-09-23"), Title:"This is the First Issue"},
+    /* let tempIssues = [
+         {Id:1, Status:"Assigned", Owner:"Person-A", Effort:14, Create: new Date("2022-09-20"), Due: new Date("2022-09-23"), Title:"This is the First Issue"},
         {Id:2, Status:"Resolves", Owner:"Person-B", Effort:10, Create: new Date("2022-09-19"), Due: new Date("2022-09-24"), Title:"This is the Second Issue"},
-       ];
+        ];
+    */
 
     const resolvers = {
       Query: {
@@ -35,11 +46,22 @@ const typeDefs = `
       },
       Mutation: {
         setAboutMessage,
+        AddSingleIssue
       },
     };
 
-    function issueList(){
-        return tempIssues;
+    function AddSingleIssue (_,{ singleIssue}){
+      singleIssue.Id = 3;
+      singleIssue.Create = new Date();
+      singleIssue.Due = new Date();
+      console.log(singleIssue)
+      return singleIssue;
+      
+    }
+
+    async function issueList(){
+      return await Issue.find({})
+      //return tempIssues;
     }
 
     function setAboutMessage(_, { message }) {

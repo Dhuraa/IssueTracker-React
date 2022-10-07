@@ -14,11 +14,11 @@ const IssueRow = (props) => {
     )
 }
 
-const IssueTable = ({allIssues}) => {
+const IssueTable = ({ allIssues }) => {
     const rowStyle = { "border": "1px solid" }
 
     const AllIssueRow = allIssues.map(issue => (
-        <IssueRow key={issue.Id} Id={issue.Id} Title={issue.Title} Status={issue.Status} Owner={issue.Owner} Effort={issue.Effort} Create={issue.Create} Due={issue.Due}/>
+        <IssueRow key={issue.Id} Id={issue.Id} Title={issue.Title} Status={issue.Status} Owner={issue.Owner} Effort={issue.Effort} Create={issue.Create} Due={issue.Due} />
     ))
 
     return (
@@ -50,44 +50,46 @@ const IssueFilter = () => {
     )
 }
 
-const AddIssue = ({AddSingleIssue}) => {
-    const handleSubmit= (e) =>{
-      e.preventDefault();
-      const form = document.forms.addIssue;
-      console.log("fro",form);
-       let newIssues = {
-        Status:form.Status.value, 
-        Owner:form.Owner.value, 
-        Effort:form.Effort.value, 
-        Create: new Date(form.Create.value), 
-        Due: new Date(form.Due.value), 
-        Title:form.Title.value, 
-       }
-       AddSingleIssue(newIssues);
-       document.forms.addIssue.reset();
+const AddIssue = ({ AddSingleIssue }) => {
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const form = document.forms.addIssue;
+        console.log("fro", form);
+        let newIssues = {
+            Status: form.Status.value,
+            Owner: form.Owner.value,
+            Effort: form.Effort.value,
+            Create: new Date(form.Create.value),
+            Due: new Date(form.Due.value),
+            Title: form.Title.value,
+        }
+        AddSingleIssue(newIssues);
+        document.forms.addIssue.reset();
     }
 
     return (
         <div>
-        <h2>AddIssue</h2>
-        <form name="addIssue" onSubmit={handleSubmit}>
-        <input type="text" name="Status" placeholder="Status"/>
-        <input type="text" name="Owner" placeholder="Owner"/>
-        <input type="text" name="Effort" placeholder="Effort"/>
-        <input type="text" name="Create" placeholder="Create"/>
-        <input type="text" name="Due" placeholder="Due"/>
-        <input type="text" name="Title" placeholder="Title"/>
-        <button type="submit">Submit</button>
-        </form>
+            <h2>AddIssue</h2>
+            <form name="addIssue" onSubmit={handleSubmit}>
+                <input type="text" name="Status" placeholder="Status" />
+                <input type="text" name="Owner" placeholder="Owner" />
+                <input type="text" name="Effort" placeholder="Effort" />
+                <input type="text" name="Create" placeholder="Create" />
+                <input type="text" name="Due" placeholder="Due" />
+                <input type="text" name="Title" placeholder="Title" />
+                <button type="submit">Submit</button>
+            </form>
         </div>
     )
 }
+
+
 const IssueList = () => {
     // let temIssues = [
     //  {Id:1, Status:"Assigned", Owner:"Person-A", Effort:14, Create: new Date("2022-09-20"), Due: new Date("2022-09-23"), Title:"This is the First Issue"},
     //  {Id:2, Status:"Resolves", Owner:"Person-B", Effort:10, Create: new Date("2022-09-19"), Due: new Date("2022-09-24"), Title:"This is the Second Issue"},
     // ];
-    const [allIssues,setAllIssues] = React.useState([]);
+    const [allIssues, setAllIssues] = React.useState([]);
     let query = `
     query {
         issueList {
@@ -102,21 +104,21 @@ const IssueList = () => {
     }`;
 
     //invokes callback function
-    React.useEffect(function(){
+    React.useEffect(function () {
         fetch('/graphql', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ query })
-        }).then(async (response)=> {
+        }).then(async (response) => {
             let tempIssues = await response.json();
             let tempList = tempIssues.data.issueList;
             console.log(tempList);
             setAllIssues(tempList);
         })
-    },[]);
+    }, []);
 
     const AddSingleIssue = (newIssues) => {
-        newIssues.Id = allIssues.length+1;
+        newIssues.Id = allIssues.length + 1;
         let issueList = allIssues.slice();
         issueList.push(newIssues);
         setAllIssues(issueList);
@@ -128,7 +130,7 @@ const IssueList = () => {
             <hr />
             <IssueTable allIssues={allIssues} />
             <hr />
-            <AddIssue AddSingleIssue={AddSingleIssue}/>
+            <AddIssue AddSingleIssue={AddSingleIssue} />
         </div>
     )
 }
@@ -138,5 +140,4 @@ const IssueList = () => {
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(<IssueList />)
-
 
