@@ -7,13 +7,10 @@ const { ApolloServer } = require("apollo-server-express");
 
 // ! = mandatory
 const typeDefs = `
-    type inputIssue={
-      Id:  Int
-      Status: String!
-      Owner: String!
-      Effort: Int
-      Title: String!
-    }
+    type Query {
+      about: String!
+      issueList:[issue!]
+  }
     type issue{
         Id:  String!
         Status: String!
@@ -23,13 +20,9 @@ const typeDefs = `
         Due: String
         Title: String!
     }
-    type Query {
-        about: String!
-        issueList:[issue!]
-    }
     type Mutation {
         setAboutMessage(message: String!): String
-        AddSingleIssue(singleIssue: inputIssue): issue
+        AddSingleIssue(Status:String!,Title:String,Owner: String,Effort: Int):issue
     }`;
 
     let aboutMessage = "Hello From GRAPHQL";
@@ -51,16 +44,25 @@ const typeDefs = `
     };
 
     function AddSingleIssue (_,{ singleIssue}){
-      singleIssue.Id = 3;
-      singleIssue.Create = new Date();
-      singleIssue.Due = new Date();
-      console.log(singleIssue)
-      return singleIssue;
-      
+      const query = Issue.find({});
+      query.count(function(err,count){
+        if(err){
+          return err;
+        }
+        else{
+          singleIssue.Id = count +1;
+          singleIssue.Create = new Date();
+          singleIssue.Due = new Date();
+          console.log(singleIssue);
+          Issue.create(singleIssue); 
+          return singleIssue;
+        }
+      })
     }
 
     async function issueList(){
-      return await Issue.find({})
+      console.log(Issue.find({}));
+      return await Issue.find({});
       //return tempIssues;
     }
 
