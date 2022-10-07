@@ -32,17 +32,13 @@ const AddIssue = ({
   const handleSubmit = e => {
     e.preventDefault();
     const form = document.forms.addIssue;
-    console.log("fro", form);
     let newIssues = {
       Status: form.Status.value,
       Owner: form.Owner.value,
       Effort: form.Effort.value,
-      Create: new Date(form.Create.value),
-      Due: new Date(form.Due.value),
       Title: form.Title.value
     };
-    AddSingleIssue(newIssues);
-    document.forms.addIssue.reset();
+    AddSingleIssue(newIssues); //document.forms.addIssue.reset();
   };
 
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h2", null, "AddIssue"), /*#__PURE__*/React.createElement("form", {
@@ -57,17 +53,9 @@ const AddIssue = ({
     name: "Owner",
     placeholder: "Owner"
   }), /*#__PURE__*/React.createElement("input", {
-    type: "text",
+    type: "number",
     name: "Effort",
     placeholder: "Effort"
-  }), /*#__PURE__*/React.createElement("input", {
-    type: "text",
-    name: "Create",
-    placeholder: "Create"
-  }), /*#__PURE__*/React.createElement("input", {
-    type: "text",
-    name: "Due",
-    placeholder: "Due"
   }), /*#__PURE__*/React.createElement("input", {
     type: "text",
     name: "Title",
@@ -94,9 +82,9 @@ const IssueList = () => {
             Due
             Title
         }
-    }`; //invokes callback function
+    }`;
 
-  React.useEffect(function () {
+  const refreshIssueList = () => {
     fetch('/graphql', {
       method: 'POST',
       headers: {
@@ -111,13 +99,45 @@ const IssueList = () => {
       console.log(tempList);
       setAllIssues(tempList);
     });
+  }; //invokes callback function
+
+
+  React.useEffect(function () {
+    refreshIssueList();
   }, []);
 
   const AddSingleIssue = newIssues => {
-    newIssues.Id = allIssues.length + 1;
-    let issueList = allIssues.slice();
-    issueList.push(newIssues);
-    setAllIssues(issueList);
+    // To add new Issue
+    const status = newIssues.Status;
+    const owner = newIssues.Owner;
+    const effort = newIssues.Effort;
+    const title = newIssues.Title;
+    const query = `
+        mutation {
+            AddSingleIssue(Status: "${status}", Title: "${title}", Owner: "${owner}", Effort: ${effort}) {
+              Id
+              Status
+              Owner
+              Effort
+              Title
+            }
+          }
+        `;
+    fetch('/graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        query
+      })
+    }).then(async response => {
+      let tempIssues = await response.json();
+
+      if (tempIssues.errors.length > 0) {
+        alert(tempIssues.errors[0].message);
+      }
+    });
   };
 
   return /*#__PURE__*/React.createElement("div", {

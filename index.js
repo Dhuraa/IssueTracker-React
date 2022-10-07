@@ -43,7 +43,10 @@ const typeDefs = `
       },
     };
 
-    function AddSingleIssue (_,{ singleIssue}){
+    function AddSingleIssue (_,singleIssue){
+      if(singleIssue.Owner.length < 3){
+        return {error:"Length can't be less than two characters"}
+      }
       const query = Issue.find({});
       query.count(function(err,count){
         if(err){
