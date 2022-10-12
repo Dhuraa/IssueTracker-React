@@ -44,9 +44,9 @@ const typeDefs = `
     };
 
     function AddSingleIssue (_,singleIssue){
-      if(singleIssue.Owner.length < 3){
-        return {error:"Length can't be less than two characters"}
-      }
+      // if(singleIssue.Owner.length < 3){
+      //   return {error:"Length can't be less than two characters"}
+      // }
       const query = Issue.find({});
       query.count(function(err,count){
         if(err){
@@ -82,7 +82,7 @@ const typeDefs = `
 
 const app = express();
 
-const port = "3000";
+const port = "3001";
 app.use(express.static("./public"));
 
 server.start()

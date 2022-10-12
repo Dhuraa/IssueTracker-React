@@ -9,6 +9,7 @@ const IssueTable = ({
   const rowStyle = {
     "border": "1px solid"
   };
+  console.log("v", allIssues);
   const AllIssueRow = allIssues.map(issue => /*#__PURE__*/React.createElement(IssueRow, {
     key: issue.Id,
     Id: issue.Id,
@@ -29,6 +30,8 @@ const IssueFilter = () => {
 const AddIssue = ({
   AddSingleIssue
 }) => {
+  const [errorMessage, setErrorMessage] = React.useState("");
+
   const handleSubmit = e => {
     e.preventDefault();
     const form = document.forms.addIssue;
@@ -38,7 +41,13 @@ const AddIssue = ({
       Effort: form.Effort.value,
       Title: form.Title.value
     };
-    AddSingleIssue(newIssues); //document.forms.addIssue.reset();
+
+    if (form.Owner.value.length < 3) {
+      setErrorMessage("Owner's name can't be less than 3 characters");
+    } else {
+      AddSingleIssue(newIssues);
+    } //document.forms.addIssue.reset();
+
   };
 
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h2", null, "AddIssue"), /*#__PURE__*/React.createElement("form", {
@@ -62,7 +71,11 @@ const AddIssue = ({
     placeholder: "Title"
   }), /*#__PURE__*/React.createElement("button", {
     type: "submit"
-  }, "Submit")));
+  }, "Submit")), /*#__PURE__*/React.createElement("h3", {
+    style: {
+      "color": "Red"
+    }
+  }, setErrorMessage));
 };
 
 const IssueList = () => {
