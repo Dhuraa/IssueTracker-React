@@ -43,12 +43,12 @@ const typeDefs = `
       },
     };
 
-    function AddSingleIssue (_,singleIssue){
+     function  AddSingleIssue (_,singleIssue){
       // if(singleIssue.Owner.length < 3){
       //   return {error:"Length can't be less than two characters"}
       // }
       const query = Issue.find({});
-      query.count(function(err,count){
+      query.count(async function(err,count){
         if(err){
           return err;
         }
@@ -57,8 +57,12 @@ const typeDefs = `
           singleIssue.Create = new Date();
           singleIssue.Due = new Date();
           console.log(singleIssue);
-          Issue.create(singleIssue); 
-          return singleIssue;
+          return await Issue.create(singleIssue).then(function(issue){
+            console.log(issue);
+            return issue;
+          });
+          // Issue.create(singleIssue); 
+          // return singleIssue;
         }
       })
     }

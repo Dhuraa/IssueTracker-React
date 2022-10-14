@@ -86,7 +86,7 @@ const AddIssue = ({ AddSingleIssue }) => {
                 <input type="text" name="Title" placeholder="Title" />
                 <button type="submit">Submit</button>
             </form>
-            <h3 style={{"color":"Red"}}>{setErrorMessage}</h3>
+            <h3 style={{"color":"Red"}}>{errorMessage}</h3>
         </div>
     )
 }
@@ -152,6 +152,7 @@ const IssueList = () => {
             body: JSON.stringify({ query })
         }).then(async (response) => {
             let tempIssues = await response.json();
+            refreshIssueList();
             if (tempIssues.errors.length > 0) {
                 alert(tempIssues.errors[0].message);
             }

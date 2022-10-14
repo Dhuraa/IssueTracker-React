@@ -41,7 +41,7 @@ const IssueList = () => {
         refreshIssueList();
     }, []);
 
-    const AddSingleIssue = (newIssues) => {
+    const AddSingleIssue = async (newIssues) => {
         // To add new Issue
         const status = newIssues.Status;
         const owner = newIssues.Owner;
@@ -58,16 +58,22 @@ const IssueList = () => {
             }
           }
         `;
-        fetch('/graphql', {
+        const response = await fetch('http://localhost:3001/graphql', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ query })
         }).then(async (response) => {
-            let tempIssues = await response.json();
-            if (tempIssues.errors.length > 0) {
-                alert(tempIssues.errors[0].message);
+            if(response.status === 200){
+                setTimeout(() => {
+                    refreshIssueList();
+                },500)
             }
-        })
+            // let tempIssues = await response.json();
+            // refreshIssueList();
+            // if (tempIssues.errors && tempIssues.errors.length > 0) {
+            //     alert(tempIssues.errors[0].message);
+            // }
+        });
     }
 
     return (

@@ -75,7 +75,7 @@ const AddIssue = ({
     style: {
       "color": "Red"
     }
-  }, setErrorMessage));
+  }, errorMessage));
 };
 
 const IssueList = () => {
@@ -146,6 +146,7 @@ const IssueList = () => {
       })
     }).then(async response => {
       let tempIssues = await response.json();
+      refreshIssueList();
 
       if (tempIssues.errors.length > 0) {
         alert(tempIssues.errors[0].message);
